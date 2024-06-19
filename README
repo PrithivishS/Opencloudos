@@ -1,0 +1,61 @@
+Patch for Definition of ref-cycles event for AMD Zen 4 and later  
+
+Instructions for this README were developed on  OpenCloudOS 9.0. This patch defines a proper ref-cycles event for Zen 4 hosts and later. 
+
+Please follow these instructions to build, install and verify  kernel support
+
+1. Get the Linux source tree
+- #git clone https://gitee.com/OpenCloudOS/OpenCloudOS-Kernel
+- #cd OpenCloudOS-Kernel
+- #git checkout next
+- #git tag; git checkout 6.6.26-1
+- #Download the patches to PATCHDIR [ ex:PATCHDIR=/tmp/kernelpatch ] & apply patches in this repo:
+- git apply $PATCHDIR/*.patch
+
+2.Configure,  build the kernel and create packages
+- #cp /boot/config-$(uname -r) .config 
+- #yes "" | make olddefconfig
+- #make -j `getconf _NPROCESSORS_ONLN` 
+- #sudo make -j`getconf _NPROCESSORS_ONLN`  rpm-pkg
+   
+3. Install the backported package 
+- #cd ..
+- #sudo rpm -ivh <kernel-6.6.26_*.x86_64.rpm> (Path to patched kernel)
+
+4. reboot and select the patched kernel
+
+5. Install perf and perftest tool to verify patched kernel.
+ - #sudo dnf install perf-6.6.6-2401.0.1.oc9.x86_64 perftest-4.5-4.oc9.x86_64 -y
+
+
+6. Verify / test installed patch using perf tool on AMD Zen 4 host as follows.
+ a) Without patch:
+===================
+     #perf list | grep ref-cycles
+	(No output) 
+     #perf stat -e "{ref-cycles, cpu/ref-cycles/}" sleep 5
+	Error:
+	The ref-cycles:u event is not supported.
+
+
+ b) With patch:
+===================
+     #perf list | grep ref-cycles
+	  ref-cycles                                         [Hardware event]
+  	  ref-cycles OR cpu/ref-cycles/                      [Kernel PMU event]
+
+     #perf stat -e "{ref-cycles, cpu/ref-cycles/}" sleep 5
+
+      Performance counter stats for 'sleep 5':
+
+           371,296      ref-cycles:u
+           371,296       cpu/ref-cycles/u
+
+       5.002200577 seconds time elapsed
+
+       0.000000000 seconds user
+       0.001862000 seconds sys
+
+ Perf Counter statistics can be captured for the ref-cycles events defined by the patch, using perf stat -e command shown above. 
+
+

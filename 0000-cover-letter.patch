@@ -1,0 +1,21 @@
+From 28240b5729c208fa1795149759ef0748d2cccd8e Mon Sep 17 00:00:00 2001
+Message-ID: <cover.1718087521.git.sprithiv@amd.com>
+From: Prithivish Shivdasani <sprithiv@amd.com>
+Date: Tue, 11 Jun 2024 12:02:01 +0530
+Subject: [PATCH 0/1] Backport of AMD's Genoa & Turin essential patches on Linux kernel v6.6.26 for OpenCloudOS9.0
+
+This series implements  Genoa and Turin essential feature support on  
+Linux kernel v6.6.26-1 for OpenCloudOS9.0. (Commit ID of OC9)
+
+
+
+Sandipan Das (1):
+  perf/x86/amd/core: Define a proper ref-cycles event for Zen 4 and
+    later
+
+ arch/x86/events/amd/core.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+-- 
+2.41.0
+
